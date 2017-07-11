@@ -1,0 +1,42 @@
+---- NFS -------
+
+- mount
+sudo /sbin/mount.nfs d-ops-nfs01:/var/nfs/risk /var/nfs/risk
+
+- unmount
+sudo umount -l /var/nfs/risk
+
+
+---- Login ------
+sudo su - <user>
+
+---- Rights -----
+sudo chmod 777 <folder or file>
+---- Changing group owner of the folder ------ 
+chown :<group-name> /path/to/folder
+----- Check groups user belongs to -------
+id -Gn <user>
+---- Add group to the user -------------
+usermod -a -G <group> <user>
+---- Show groups ---------
+cut -d: -f1 /etc/group
+
+---- Memory usage ---
+- partitions
+sudo df -h
+- folder or file
+sudo du -h <file/folder>
+
+---- Reading files ----
+tail -f <filename>
+vim <filename>  (commands inside :q, :i, :w)
+
+---- Greping processes ----
+ps -aux | grep java
+kill -9 <processorId>
+
+---- Running service ----
+service <service name> status|stop|start
+
+---- Path to the program ----
+which -a pip  (Windows : where pip)
