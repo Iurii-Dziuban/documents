@@ -8,3 +8,7 @@ FLUSH PRIVILEGES;
 # Execute the script
 mysql -u root -p < <path_to_folder>/create_schemas.sql
   # type password
+
+------ MySQL workbench -------
+# enable delete/update/modify queries on db
+SET SQL_SAFE_UPDATES = 0;
