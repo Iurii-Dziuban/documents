@@ -1,0 +1,41 @@
+There should be at least two drives to have Linux on one drive and secoind drive to encrypt (Note: drive with running linux can not be encrypted!)
+
+sudo apt-get install cryptsetup
+# encrypt drive and set a password
+sudo cryptsetup luksFormat /dev/sdX
+
+##The output:
+##WARNING!
+##========
+##This will overwrite data on /dev/sdX irrevocably.
+##Are you sure? (Type uppercase yes): YES
+##Enter passphrase for /dev/sdX: <passphrase to encrypt disk>
+##Verify passphrase: <passphrase to encrypt disk>
+
+# Manually decrypt encrypted drive
+sudo cryptsetup luksOpen /dev/sdX encHome
+# Enter passphrase for /dev/sdX: <passphrase to encrypt disk>
+
+# Manually mount disk to /mnt/home  
+sudo mkfs.ext4 /dev/mapper/encHome
+sudo mkdir /mnt/home
+sudo mount /dev/mapper/encHome /mnt/home
+# Move content from /home to /mnt/home
+sudo mv /home/* /mnt/home/
+sudo umount /mnt/home/
+sudo rmdir /mnt/home/
+# Mount new drive to /home directory
+sudo mount /dev/mapper/encHome /home/
+####### Note: this procedure is needed, cause /home already exists and mounting drive on /home will do the "shadowing" and system will not see the real content of /home, but was is mounted and it can be crucial for the system to work
+
+###### Configure encryption/decryption to be automatic during start up #####
+### each time it is needed to manually decrypt the drive and mount it.
+# Configuration, so that decryption of the drive and mount will be done at the start up (<passphrase to encrypt disk> should be supplied):
+# Get data from the disk
+sudo blkid | grep /dev/sdX
+> /dev/sdX: UUID="8cf3682d-4293-4d99-ac3d-c970788a4add" TYPE="crypto_LUKS"
+# add next lines to the following config (might be no permission to files without sudo) UUID from previous step
+echo -e 'encryptedHome\tUUID=8cf3682d-4293-4d99-ac3d-c970788a4add\tnone\tluks' >>/etc/crypttab
+echo -e '/dev/mapper/encryptedHome\t/home/\text4\tdefaults\t0\t2' >>/etc/fstab
+reboot
+## Done
