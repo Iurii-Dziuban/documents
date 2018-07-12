@@ -1,3 +1,7 @@
+# git user_name/email configuration
+git config --global user.name "<Name Surname>"
+git config --global user.email "<name>.<surname>@gmail.com"
+
 # update from remote branch
 git remote update
 
