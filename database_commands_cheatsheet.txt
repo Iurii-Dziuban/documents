@@ -1,0 +1,4 @@
+-------- MySQL ---------
+# Execute the script
+mysql -u root -p < <path_to_folder>/create_schemas.sql
+  # type password
