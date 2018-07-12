@@ -1,4 +1,10 @@
 -------- MySQL ---------
+# Recreate user with privileges
+DROP USER 'root'@'localhost';
+CREATE USER 'root'@'localhost' IDENTIFIED BY 'root';
+GRANT ALL ON *.* TO 'root'@'localhost' with GRANT OPTION;
+FLUSH PRIVILEGES;
+
 # Execute the script
 mysql -u root -p < <path_to_folder>/create_schemas.sql
   # type password
