@@ -3,15 +3,26 @@
 - mount
 sudo /sbin/mount.nfs d-ops-nfs01:/var/nfs/risk /var/nfs/risk
 
+sudo mkfs.ext4 /dev/mapper/encHome
+sudo mount /dev/mapper/encHome /mnt/home
+
 - unmount
 sudo umount -l /var/nfs/risk
-
+sudo umount /mnt/home/
 
 ---- Login ------
+# login as a user
 sudo su - <user>
+# login to shell as root user (root user has all permissions to do)
+sudo -s
+sudo --shell
+# log out from root shell
+exit
 
 ---- Rights -----
-sudo chmod 777 <folder or file>
+sudo chmod 0777 <folder or file>
+-- apply rights recursively
+sudo chmod -R 0777 <folder>
 ---- Changing group owner of the folder ------ 
 chown :<group-name> /path/to/folder
 ----- Check groups user belongs to -------
@@ -27,16 +38,134 @@ sudo df -h
 - folder or file
 sudo du -h <file/folder>
 
+---- Drive usage----
+# get info about the drive
+sudo blkid | grep /dev/sdX
+##### /dev/sdX: UUID="8cf3682d-4293-4d99-ac3d-c970788a4add" TYPE="crypto_LUKS"
+
+
 ---- Reading files ----
 tail -f <filename>
 vim <filename>  (commands inside :q, :i, :w)
+less <filename>
+
+---- Writing to file / executing -------
+# create file
+touch filenames.bash
+# append to a file 
+# '.' is to append content literaly as it is. 
+# Dot without quotes - to append to file and replacing parameters that start with "dollar"
+# Dot is to say that multiple lines will follow and last Dot on a new line is that data flow ended
+# << or > is the flow of data - from/to file
+# "$@" in the end of file is to execute the command passed as it is from the script
+
+cat << '.' > filenames.bash
+filenames() {
+         local prefix=$(date +"V%y%m%d%H%M%S__${1// /_}_");
+         for n in backup data schema rollback;
+         do echo "${prefix}${n}.sql";
+         done;
+}
+  
+"$@"
+.
+# Run this bash script with function name and parameters
+bash filenames.bash filenames "hello"
+# Example of the output
+# V180711154241__hello_backup.sql
+# V180711154241__hello_data.sql
+# V180711154241__hello_schema.sql
+# V180711154241__hello_rollback.sql
+
+# Another way to run script is to load it into shell script, just by copy/paste function into terminal and execute
+filenames() { local prefix=$(date +"V%y%m%d%H%M%S__${1// /_}_"); for n in backup data schema rollback; do echo "${prefix}${n}.sql"; done; }
+# Function is loaded into terminal. Executing it:
+filenames "hello"
+# Same output will follow
+
+# Appending to file
+echo -e '<content>' >> <filename>
+
+# splitting input/output (appending content to protected file with no permissions to it)
+echo '<content>' | sudo tee --append <protectedFilepath>
+
+---- Running scripts ----
+sudo sh script.sh
+
+---- Creating symbolic link to file without copying ----
+sudo ln -s /usr/share/java/mysql-<version>.jar <tomcat_directory>/lib/mysql.jar
 
 ---- Greping processes ----
 ps -aux | grep java
 kill -9 <processorId>
 
 ---- Running service ----
+# service management
 service <service name> status|stop|start
+# start service at boot time. space for multiple services
+sudo systemctl status|stop|start mysql redis-server zookeeper
+
+---- System configuration ----
+# Number of open files, etc. (in case of issues with it)
+# update system configuration parameters 
+sudo sysctl -w fs.inotify.max_user_watches=524288
+sudo sysctl -w fs.inotify.max_user_instances=256
+# reload system configuration
+sudo sysctl -p
 
 ---- Path to the program ----
 which -a pip  (Windows : where pip)
+
+---- Install update programs ----
+sudo apt update
+# install <bash>
+sudo apt-get install bash
+# add additional repo to check packages (here openjdk)
+sudo add-apt-repository ppa:openjdk-r/ppa
+# Install multiple packages space-separated
+sudo apt-get install mysql-server mysql-workbench zookeeperd redis-server libmysql-java
+
+
+---- Ssh keys generation ----
+$ ssh-keygen
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/user/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/user/.ssh/id_rsa.
+Your public key has been saved in /home/user/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:Jep9QB21/SlWhKCSlI5O0pZaOGEVjfSmKiYXFf9WTGQ user@machine
+The key's randomart image is:
++---[RSA 2048]----+
+|    +++...Eoo .. |
+|   o +oo.=.. +.  |
+|  . = ==o.= . .. |
+|   = Bo=.+    ...|
+|  . O.. S    o ..|
+|   o.o o .  . .  |
+|.o..  . . .      |
+|o..      .       |
+|                 |
++----[SHA256]-----+
+
+---- VM setup ----
+# Install VM tools and reboot to apply changes (copy paste support VM <-> machine, display resize, copy/paste file)
+sudo apt-get install open-vm-tools
+sudo apt-get install open-vm-tools-desktop
+sudo reboot
+
+---- Tomcat setup ----
+# add tomcat group and user for /opt/tomcat folder
+sudo groupadd tomcat
+sudo useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
+# download tomcat archive to /tmp
+cd /tmp
+sudo apt install curl
+curl -O http://apache.lauf-forum.at/tomcat/tomcat-8/v8.0.53/bin/apache-tomcat-8.0.53.tar.gz
+# unpack archive to /opt/tomcat folder
+sudo mkdir /opt/tomcat
+sudo tar xzvf apache-tomcat-8*tar.gz -C /opt/tomcat --strip-components=1
+
+#
+
