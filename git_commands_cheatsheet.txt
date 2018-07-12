@@ -1,0 +1,40 @@
+# update from remote branch
+git remote update
+
+# create branch from origin/master
+git checkout -b my_branch origin/master
+
+# check status
+git status
+
+# stage the files
+git add <file1> <file2>
+
+# commit locally with message
+git commit -m "implemented something"
+
+# to amend commit (add additional things to the previous commit)
+git commit --amend
+
+# push normally
+git push origin HEAD:<name of your branch>
+# push amended commit.  
+# --force is needed if already commit was in remote, 
+# cause history was changed and need to force changes to remote with history changes.
+git push origin HEAD:<name of your branch> --force
+
+# cherry pick commit from one branch to another
+git cherry-pick <commit hash from old branch>
+
+# check log
+git log
+
+# check out branch from remote and update to master latest version
+git remote update
+git checkout -b <branch name> origin/<branch name>
+git rebase origin/master
+
+# stash changes
+git stash
+# unstash previously stashed changes
+git stash apply
