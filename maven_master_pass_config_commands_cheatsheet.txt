@@ -1,0 +1,56 @@
+#### Generate master password for maven ####
+mvn --encrypt-master-password <your_master_password>
+# This command should return your generated master password looking like :
+# {o72vvf4uKFkH9fHNHoMA997Kaq2SpjXJQxZ5DtBCLohMGoi67d+67FO8q946HO8O}
+# Tip : your master password includes the characters '{' and '}'.
+ 
+# Then, we will clean the history to remove this password from it.
+history -c
+
+# Configure settings-security.xml
+touch /home/<your_linux_username>/.m2/settings-security.xml
+# paste the following content
+<settingsSecurity>
+    <master>{your_generated_master_password}</master>
+</settingsSecurity>
+
+#### Setup nexus password for maven ####
+# encrypt nexus password for maven
+mvn --encrypt-password <your_nexus_password>
+# This command should return your encrypted password looking like :
+# {hFOSsILmqGkH3K4Qr3gFWltoRLg2uCrS9y8jYkquQLY=}
+# Tip : your encrypted password includes the characters '{' and '}'.
+# Then, we will clean the history to remove this password from it.
+history -c
+
+#### Create settings.xml ####
+
+touch /home/<your_linux_username>/.m2/settings.xml
+
+#### Content for settings.xml ####
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      https://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <localRepository>${user.home}/.m2/repository</localRepository>
+    <mirrors>
+        <mirror>
+            <id>central</id>
+            <name> My Central Repository Mirror</name>
+            <url>https://nexus.server.com/content/groups/public/</url>
+            <mirrorOf>*</mirrorOf>
+        </mirror>
+    </mirrors>
+    <servers>
+        <server>
+            <id>nexus.server.com</id>
+            <username>[nexus user name]</username>
+            <password>{[maven encrypted password]}</password>
+        </server>
+    </servers>
+    <proxies/>
+    <profiles/>
+    <activeProfiles/>
+</settings>
+
+# Maven will handle encryption/description of real nexus password for you. Just seeing {[maven encrypted password]} or {your_generated_master_password} will not give info for the attacker without knowing real your_master_password
