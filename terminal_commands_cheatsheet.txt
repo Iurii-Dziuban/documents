@@ -89,6 +89,13 @@ echo -e '<content>' >> <filename>
 # splitting input/output (appending content to protected file with no permissions to it)
 echo '<content>' | sudo tee --append <protectedFilepath>
 
+# shuffling the file lines and output with line number (good to pick up random from the file - auction - win game)
+cat > file.txt
+ME
+YOU
+CTL+D
+shuf file.txt | cat -n
+
 #### Download from web ####
 # using curl
 sudo apt install curl
