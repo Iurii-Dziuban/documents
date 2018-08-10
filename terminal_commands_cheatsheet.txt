@@ -49,6 +49,16 @@ server {
 # restart nginx
 sudo nginx -s reload
 
+---- Zookeeper ----
+# Check zookeeper port / is running
+root@host:~# telnet localhost 2181
+Trying 127.0.0.1...
+Connected to myhost.
+Escape character is '^]'.
+stats
+
+systemctl status zookeeper
+
 ---- Login ------
 # login as a user
 sudo su - <user>
