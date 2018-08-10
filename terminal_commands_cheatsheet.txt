@@ -10,6 +10,45 @@ sudo mount /dev/mapper/encHome /mnt/home
 sudo umount -l /var/nfs/risk
 sudo umount /mnt/home/
 
+---- NGINX ------
+echo "127.0.0.1       frontenddomain.com backenddomain.com" >> /etc/hosts
+sudo apt-get install nginx
+
+---- NGINX CONFIGURATION ----
+/etc/nginx/sites-enabled/default :
+
+server{
+        listen 80;
+        server_name backenddomain.com;
+ 
+        location /v1 {
+                add_header 'Access-Control-Allow-Credentials' 'true';
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                add_header 'Access-Control-Allow-Headers' 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+                add_header 'Access-Control-Max-Age' 1728000;
+                proxy_hide_header  'Access-Control-Allow-Origin';
+                add_header 'Access-Control-Allow-Origin' 'http://frontenddomain.com';
+                proxy_pass http://backenddomain.com:8080/application/api;             
+        }
+}
+ 
+server {
+        listen 80;
+        server_name frontenddomain.com;
+ 
+        root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
+ 
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                proxy_pass http://frontenddomain.com:8888;
+        }
+}
+---- NGINX CONFIGURATION ----
+# restart nginx
+sudo nginx -s reload
+
 ---- Login ------
 # login as a user
 sudo su - <user>
