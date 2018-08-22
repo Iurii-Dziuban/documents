@@ -59,6 +59,19 @@ stats
 
 systemctl status zookeeper
 
+# list folders
+/usr/share/zookeeper/bin/zkCli.sh -server localhost:2181 ls /services 2>/dev/null
+/usr/share/zookeeper/bin/zkCli.sh -server localhost:2181 ls /services/RiskManagementServer 2>/dev/null
+#Connecting to localhost:2181
+# 
+#WATCHER::
+# 
+#WatchedEvent state:SyncConnected type:None path:null
+#[57b2f687-16a2-4bac-bd18-711ba7c59983]
+
+# get instance
+/usr/share/zookeeper/bin/zkCli.sh -server localhost:2181 get /services/RiskManagementServer/57b2f687-16a2-4bac-bd18-711ba7c59983 2>/dev/null
+
 ---- Login ------
 # login as a user
 sudo su - <user>
